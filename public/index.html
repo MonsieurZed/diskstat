@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiskStat - Disk Usage Analyzer</title>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+  <header>
+    <h1>DiskStat</h1>
+    <div class="controls">
+      <input type="text" id="pathInput" value="/" placeholder="Path to scan...">
+      <select id="depthSelect">
+        <option value="2">Depth 2</option>
+        <option value="3">Depth 3</option>
+        <option value="4" selected>Depth 4</option>
+        <option value="5">Depth 5</option>
+        <option value="6">Depth 6</option>
+      </select>
+      <button id="scanBtn" onclick="startScan()">Scan</button>
+      <label class="toggle-hidden-label" title="Masquer les fichiers cachés (.name)">
+        <input type="checkbox" id="hideHiddenToggle" checked>
+        <span class="toggle-hidden-track"><span class="toggle-hidden-thumb"></span></span>
+        <span class="toggle-hidden-text">Masquer cachés</span>
+      </label>
+    </div>
+  </header>
+
+  <div class="breadcrumb" id="breadcrumb"></div>
+
+  <div class="main">
+    <div class="sidebar">
+      <div class="sidebar-header">Files &amp; Directories</div>
+      <div class="file-list" id="fileList"></div>
+      <div class="sidebar-header" style="border-top:1px solid var(--border)">Scan History</div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+    <div class="treemap-container">
+      <div id="treemap">
+        <div class="loading-overlay" id="loading" style="display:none">
+          <div class="spinner"></div>
+          <div class="progress-wrap">
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+            <div class="progress-stats">
+              <span id="progressPct">0%</span>
+              <span id="progressElapsed">0:00</span>
+            </div>
+          </div>
+          <div class="progress-path" id="progressPath">Starting scan...</div>
+          <button class="cancel-scan-btn" onclick="cancelScan()">&#x2715; Annuler le scan</button>
+        </div>
+      </div>
+      <div class="ext-legend" id="extLegend"></div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span id="statusLeft">Ready - Enter a path and click Scan</span>
+    <span id="statusRight"></span>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <!-- Context Menu -->
+  <div class="ctx-menu" id="ctxMenu">
+    <div class="ctx-menu-item" id="ctxCopy"><span class="ctx-icon">&#128203;</span>Copy path</div>
+    <div class="ctx-menu-item" id="ctxMove"><span class="ctx-icon">&#9998;</span>Move</div>
+    <div class="ctx-menu-item danger" id="ctxDelete"><span class="ctx-icon">&#128465;</span>Delete</div>
+    <div class="ctx-menu-sep"></div>
+    <div class="ctx-menu-item" id="ctxInfo"><span class="ctx-icon">&#9432;</span>More Info</div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <div class="modal-title">Delete</div>
+      <div class="modal-body">
+        <div>Are you sure you want to delete this?</div>
+        <div class="modal-path" id="deleteTargetPath"></div>
+        <div style="color:var(--red);font-size:12px;margin-top:4px">This action is permanent and cannot be undone.</div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeModal('deleteModal')">Cancel</button>
+        <button class="modal-btn modal-btn-danger" id="deleteConfirmBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Modal -->
+  <div class="modal-overlay" id="infoModal">
+    <div class="modal">
+      <div class="modal-title">File Information</div>
+      <div class="modal-body" id="infoModalBody"></div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeModal('infoModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Move Modal -->
+  <div class="modal-overlay" id="moveModal">
+    <div class="modal" style="min-width:500px">
+      <div class="modal-title">Move</div>
+      <div class="modal-body">
+        <div style="font-size:12px;color:var(--fg2);margin-bottom:4px">Moving:</div>
+        <div class="modal-path" id="moveSourcePath"></div>
+        <div style="font-size:12px;color:var(--fg2);margin-bottom:4px">Select destination:</div>
+        <div class="move-explorer">
+          <div class="move-breadcrumb" id="moveBreadcrumb"></div>
+          <div class="move-list" id="moveList"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeModal('moveModal')">Cancel</button>
+        <button class="modal-btn modal-btn-primary" id="moveConfirmBtn">Move here</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts chargés dans l'ordre de dépendance -->
+  <script src="/js/config.js"></script>
+  <script src="/js/format.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/treemap.js"></script>
+  <script src="/js/fileList.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/scan.js"></script>
+  <script src="/js/history.js"></script>
+  <script src="/js/fileOps.js"></script>
+  <script src="/js/events.js"></script>
+</body>
+</html>
