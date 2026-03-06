@@ -31,7 +31,7 @@ const MIME_TYPES = {
  * Chemin absolu vers le répertoire des fichiers statiques.
  * @type {string}
  */
-const PUBLIC_DIR = path.join(__dirname, '../../public');
+const PUBLIC_DIR = path.join(__dirname, '../public');
 
 /**
  * Gestionnaire principal des requêtes HTTP.
