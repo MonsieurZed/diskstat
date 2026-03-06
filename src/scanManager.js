@@ -26,9 +26,10 @@ const activeScans = new Map();
  * @param {string}  realPath  - Chemin réel dans le conteneur.
  * @param {number}  maxDepth  - Profondeur maximale de scan.
  * @param {boolean} hideHidden - Si vrai, les fichiers cachés sont ignorés.
+ * @param {boolean} showAll    - Si vrai, désactive le plafond de 200 enfants par nœud.
  * @returns {Object} L'objet scan créé et enregistré dans activeScans.
  */
-function createScan(userPath, realPath, maxDepth, hideHidden) {
+function createScan(userPath, realPath, maxDepth, hideHidden, showAll) {
   const id   = crypto.randomBytes(8).toString('hex');
   const scan = {
     id,
@@ -44,7 +45,7 @@ function createScan(userPath, realPath, maxDepth, hideHidden) {
 
   const workerScript = path.join(__dirname, 'scanner.js');
   const worker = new Worker(workerScript, {
-    workerData: { scanPath: realPath, maxDepth, hideHidden: !!hideHidden },
+    workerData: { scanPath: realPath, maxDepth, hideHidden: !!hideHidden, showAll: !!showAll },
   });
 
   scan.worker = worker;

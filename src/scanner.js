@@ -28,6 +28,26 @@ let scanLastPost = 0;
 let hideHiddenFlag = false;
 
 /**
+ * Nombre maximum d'enfants par nœud avant regroupement en "(N others)".
+ * 0 = illimité.
+ * @type {number}
+ */
+let maxItemsFlag = 200;
+
+/**
+ * Regroupe les enfants excédentaires en un nœud synthétique "(N others)".
+ * @param {Array} children - Tableau trié par taille décroissante.
+ * @returns {Array} Tableau potentiellement tronqué avec nœud "(N others)".
+ */
+function applyMaxItems(children) {
+  if (maxItemsFlag === 0 || children.length <= maxItemsFlag) return children;
+  const kept      = children.slice(0, maxItemsFlag);
+  const otherSize = children.slice(maxItemsFlag).reduce((s, c) => s + c.size, 0);
+  kept.push({ name: `(${children.length - maxItemsFlag} others)`, path: '', size: otherSize, children: [] });
+  return kept;
+}
+
+/**
  * Scanne récursivement un répertoire et retourne son arbre de taille.
  * @param {string} dirPath  - Chemin absolu du répertoire à scanner.
  * @param {number} depth    - Profondeur courante (commence à 0).
@@ -89,12 +109,7 @@ function scanDirSync(dirPath, depth, maxDepth) {
   }
 
   result.children.sort((a, b) => b.size - a.size);
-  if (result.children.length > 200) {
-    const kept      = result.children.slice(0, 200);
-    const otherSize = result.children.slice(200).reduce((s, c) => s + c.size, 0);
-    kept.push({ name: `(${result.children.length - 200} others)`, path: '', size: otherSize, children: [] });
-    result.children = kept;
-  }
+  result.children = applyMaxItems(result.children);
   return result;
 }
 
@@ -104,8 +119,9 @@ function scanDirSync(dirPath, depth, maxDepth) {
  * puis le résultat final via parentPort.
  */
 if (!isMainThread) {
-  const { scanPath, maxDepth, hideHidden } = workerData;
+  const { scanPath, maxDepth, hideHidden, showAll } = workerData;
   hideHiddenFlag = !!hideHidden;
+  maxItemsFlag   = showAll ? 0 : 200;
 
   const rootResult = {
     name: path.basename(scanPath) || '/',
@@ -174,12 +190,7 @@ if (!isMainThread) {
   }
 
   rootResult.children.sort((a, b) => b.size - a.size);
-  if (rootResult.children.length > 200) {
-    const kept      = rootResult.children.slice(0, 200);
-    const otherSize = rootResult.children.slice(200).reduce((s, c) => s + c.size, 0);
-    kept.push({ name: `(${rootResult.children.length - 200} others)`, path: '', size: otherSize, children: [] });
-    rootResult.children = kept;
-  }
+  rootResult.children = applyMaxItems(rootResult.children);
 
   parentPort.postMessage({ type: 'progress', currentPath: toDisplayPath(scanPath), pct: 100 });
   parentPort.postMessage({ type: 'done', data: rootResult });

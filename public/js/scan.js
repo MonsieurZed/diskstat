@@ -111,6 +111,7 @@ async function startScan() {
   const scanPath   = document.getElementById('pathInput').value.trim() || '/';
   const depth      = document.getElementById('depthSelect').value;
   const hideHidden = document.getElementById('hideHiddenToggle').checked ? '1' : '0';
+  const showAll    = document.getElementById('showAllToggle').checked    ? '1' : '0';
 
   showScanUI(scanPath);
 
@@ -122,7 +123,7 @@ async function startScan() {
   }, 1000);
 
   try {
-    const sseUrl = `/api/scan-stream?path=${encodeURIComponent(scanPath)}&depth=${depth}&hideHidden=${hideHidden}`;
+    const sseUrl = `/api/scan-stream?path=${encodeURIComponent(scanPath)}&depth=${depth}&hideHidden=${hideHidden}&showAll=${showAll}`;
     const data   = await connectToScan(sseUrl, scanPath, depth);
     if (data.error) { alert('Error: ' + data.error); return; }
     currentData = data;

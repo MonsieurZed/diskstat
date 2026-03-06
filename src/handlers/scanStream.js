@@ -41,9 +41,10 @@ function handleScanStream(req, res, query) {
   const userPath   = query.path || '/';
   const depth      = Math.min(parseInt(query.depth) || MAX_DEPTH, MAX_DEPTH);
   const hideHidden = query.hideHidden !== '0';
+  const showAll    = query.showAll === '1';
   const realPath   = toRealPath(userPath);
 
-  const scan = createScan(userPath, realPath, depth, hideHidden);
+  const scan = createScan(userPath, realPath, depth, hideHidden, showAll);
   subscribeSse(res, scan);
   req.on('close', () => { scan.listeners.delete(res); });
 }

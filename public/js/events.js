@@ -37,6 +37,10 @@ window.addEventListener('resize', () => {
 window.addEventListener('load', () => {
   renderHistory();
 
+  document.getElementById('hideLabelsToggle').addEventListener('change', (e) => {
+    document.getElementById('treemap').classList.toggle('no-labels', e.target.checked);
+  });
+
   const saved = sessionStorage.getItem('dirstat_active_scan');
   if (saved) {
     try {

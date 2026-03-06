@@ -8,7 +8,16 @@
 </head>
 <body>
   <header>
-    <h1>DiskStat</h1>
+    <div class="logo" title="DiskStat">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="16" height="10" rx="2" fill="#7aa2f7"/>
+        <rect x="19" y="1" width="8"  height="10" rx="2" fill="#e06c75"/>
+        <rect x="1" y="13" width="8"  height="14" rx="2" fill="#9ece6a"/>
+        <rect x="11" y="13" width="6" height="14" rx="2" fill="#bb9af7"/>
+        <rect x="19" y="13" width="8" height="14" rx="2" fill="#ff9e64"/>
+      </svg>
+      <span>DiskStat</span>
+    </div>
     <div class="controls">
       <input type="text" id="pathInput" value="/" placeholder="Path to scan...">
       <select id="depthSelect">
@@ -19,10 +28,22 @@
         <option value="6">Depth 6</option>
       </select>
       <button id="scanBtn" onclick="startScan()">Scan</button>
-      <label class="toggle-hidden-label" title="Masquer les fichiers cachés (.name)">
+      <div class="ctrl-sep"></div>
+      <label class="ctrl-toggle" title="Masquer les fichiers cachés (.name)">
         <input type="checkbox" id="hideHiddenToggle" checked>
-        <span class="toggle-hidden-track"><span class="toggle-hidden-thumb"></span></span>
-        <span class="toggle-hidden-text">Masquer cachés</span>
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">Masquer cachés</span>
+      </label>
+      <label class="ctrl-toggle" title="Afficher tous les fichiers sans limite (plus lent)">
+        <input type="checkbox" id="showAllToggle">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">Tout afficher</span>
+      </label>
+      <div class="ctrl-sep"></div>
+      <label class="ctrl-toggle" title="Masquer les labels de texte dans la treemap" id="hideLabelsLabel">
+        <input type="checkbox" id="hideLabelsToggle">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">Masquer labels</span>
       </label>
     </div>
   </header>
