@@ -32,9 +32,7 @@ function renderFileList(data) {
 
     item.addEventListener('click', () => {
       if (isDir) {
-        navStack.push(data);
-        currentData = child;
-        renderAll(child);
+        navigateToNode(child);
       }
     });
 

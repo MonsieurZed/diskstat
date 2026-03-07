@@ -5,4 +5,6 @@
 
 let currentData = null;
 let navStack = [];
+let hideLabels = false;
+let lastScanDuration = 0;
 const tooltip = document.getElementById('tooltip');

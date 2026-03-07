@@ -5,39 +5,53 @@
 
 const EXT_COLORS = {
   // Video
-  '.mkv': '#e06c75', '.mp4': '#e06c75', '.avi': '#d94f5f', '.mov': '#c94555',
-  '.wmv': '#b93b4b', '.flv': '#e06c75', '.webm': '#e06c75', '.m4v': '#e06c75',
-  '.ts': '#d94f5f',
+  '.mkv': '#8c5a5f', '.mp4': '#8c5a5f', '.avi': '#845458', '.mov': '#7c4e52',
+  '.wmv': '#74484c', '.flv': '#8c5a5f', '.webm': '#8c5a5f', '.m4v': '#8c5a5f',
+  '.ts': '#845458',
   // Audio
-  '.mp3': '#e0af68', '.flac': '#d4a35c', '.wav': '#c89750', '.aac': '#e0af68',
-  '.ogg': '#e0af68', '.m4a': '#e0af68', '.opus': '#d4a35c', '.wma': '#c89750',
+  '.mp3': '#9e8a52', '.flac': '#968250', '.wav': '#8e7a4e', '.aac': '#9e8a52',
+  '.ogg': '#9e8a52', '.m4a': '#9e8a52', '.opus': '#968250', '.wma': '#8e7a4e',
   // Images
-  '.jpg': '#9ece6a', '.jpeg': '#9ece6a', '.png': '#92c25e', '.gif': '#86b652',
-  '.bmp': '#7aaa46', '.svg': '#9ece6a', '.webp': '#9ece6a', '.tiff': '#86b652',
-  '.ico': '#7aaa46', '.raw': '#6e9e3a',
+  '.jpg': '#6a8c52', '.jpeg': '#6a8c52', '.png': '#648650', '.gif': '#5e804e',
+  '.bmp': '#587a4c', '.svg': '#6a8c52', '.webp': '#6a8c52', '.tiff': '#5e804e',
+  '.ico': '#587a4c', '.raw': '#527448',
   // Archives
-  '.zip': '#bb9af7', '.rar': '#b18ef1', '.7z': '#a782eb', '.tar': '#9d76e5',
-  '.gz': '#936adf', '.bz2': '#895ed9', '.xz': '#bb9af7', '.zst': '#b18ef1',
+  '.zip': '#7a6a9e', '.rar': '#746496', '.7z': '#6e5e8e', '.tar': '#685886',
+  '.gz': '#62527e', '.bz2': '#5c4c76', '.xz': '#7a6a9e', '.zst': '#746496',
   // Documents
-  '.pdf': '#f7768e', '.doc': '#7aa2f7', '.docx': '#7aa2f7', '.xls': '#9ece6a',
-  '.xlsx': '#9ece6a', '.ppt': '#ff9e64', '.pptx': '#ff9e64', '.txt': '#a9b1d6',
-  '.md': '#a9b1d6', '.csv': '#9ece6a',
+  '.pdf': '#9e5a6a', '.doc': '#5a7a9e', '.docx': '#5a7a9e', '.xls': '#6a8c52',
+  '.xlsx': '#6a8c52', '.ppt': '#9e7a52', '.pptx': '#9e7a52', '.txt': '#7a8296',
+  '.md': '#7a8296', '.csv': '#6a8c52',
   // Code
-  '.js': '#e0af68', '.py': '#7aa2f7', '.java': '#f7768e', '.cpp': '#7aa2f7',
-  '.c': '#7aa2f7', '.go': '#7dcfff', '.rs': '#ff9e64', '.rb': '#f7768e',
-  '.php': '#bb9af7', '.html': '#ff9e64', '.css': '#7aa2f7', '.json': '#e0af68',
-  '.xml': '#ff9e64', '.yml': '#f7768e', '.yaml': '#f7768e', '.sh': '#9ece6a',
+  '.js': '#9e8a52', '.py': '#5a7a9e', '.java': '#9e5a6a', '.cpp': '#5a7a9e',
+  '.c': '#5a7a9e', '.go': '#5a8e9e', '.rs': '#9e7a52', '.rb': '#9e5a6a',
+  '.php': '#7a6a9e', '.html': '#9e7a52', '.css': '#5a7a9e', '.json': '#9e8a52',
+  '.xml': '#9e7a52', '.yml': '#9e5a6a', '.yaml': '#9e5a6a', '.sh': '#6a8c52',
   // Database
-  '.db': '#7dcfff', '.sqlite': '#7dcfff', '.sql': '#7dcfff',
+  '.db': '#5a8e9e', '.sqlite': '#5a8e9e', '.sql': '#5a8e9e',
   // Disk images / ISOs
-  '.iso': '#ff9e64', '.img': '#ff9e64',
+  '.iso': '#9e7a52', '.img': '#9e7a52',
   // Executables
-  '.exe': '#f7768e', '.dll': '#f7768e', '.so': '#f7768e', '.bin': '#d94f5f',
+  '.exe': '#9e5a6a', '.dll': '#9e5a6a', '.so': '#9e5a6a', '.bin': '#8c4e5a',
   // Misc
-  '.log': '#565f89', '.bak': '#565f89', '.tmp': '#565f89',
+  '.log': '#4a5268', '.bak': '#4a5268', '.tmp': '#4a5268',
 };
 
 const DIR_COLORS = [
-  '#5a7fbf', '#4e8f6a', '#8f6a4e', '#6a4e8f', '#8f4e6a',
-  '#4e6a8f', '#6a8f4e', '#8f8f4e', '#4e8f8f', '#8f4e4e',
+  '#3a4f6a', '#4a6a4a', '#5a4a6a', '#6a5a3a', '#3a5a5a',
+  '#5a3a4a', '#4a5a3a', '#3a4a5a', '#5a4a3a', '#4a3a5a',
 ];
+
+const VIDEO_EXTS = new Set([
+  '.mkv', '.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.ts',
+]);
+
+/**
+ * Vérifie si un fichier est une vidéo d'après son extension.
+ * @param {string} name - Nom du fichier.
+ * @returns {boolean} Vrai si le fichier est une vidéo.
+ */
+function isVideoFile(name) {
+  const ext = (name.match(/\.[^.]+$/) || [''])[0].toLowerCase();
+  return VIDEO_EXTS.has(ext);
+}

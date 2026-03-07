@@ -11,10 +11,28 @@ function attachContextMenu(el, node) {
     e.preventDefault();
     e.stopPropagation();
     ctxTarget = node;
+
+    const arrSep  = document.getElementById('ctxArrSep');
+    const arrItem = document.getElementById('ctxArr');
+    arrSep.style.display  = 'none';
+    arrItem.style.display = 'none';
+
+    if (node.arr) {
+      const arrIcon  = document.getElementById('ctxArrIcon');
+      const arrLabel = document.getElementById('ctxArrLabel');
+      const isRadarr = node.arr.service === 'radarr';
+      arrIcon.innerHTML    = isRadarr ? '&#127916;' : '&#128250;';
+      arrLabel.textContent = isRadarr ? 'Ouvrir dans Radarr' : 'Ouvrir dans Sonarr';
+      arrSep.style.display  = '';
+      arrItem.style.display = '';
+    }
+
     const menu = document.getElementById('ctxMenu');
     menu.style.display = 'block';
-    const mx = Math.min(e.clientX, window.innerWidth - 200);
-    const my = Math.min(e.clientY, window.innerHeight - 140);
+    const mw = menu.offsetWidth || 180;
+    const mh = menu.offsetHeight || 160;
+    const mx = (e.clientX + mw > window.innerWidth)  ? e.clientX - mw : e.clientX;
+    const my = (e.clientY + mh > window.innerHeight) ? e.clientY - mh : e.clientY;
     menu.style.left = mx + 'px';
     menu.style.top  = my + 'px';
   });
@@ -65,6 +83,12 @@ document.getElementById('ctxInfo').addEventListener('click', () => {
   const nodePath = ctxTarget.path;
   hideContextMenu();
   openInfoModal(nodePath);
+});
+
+document.getElementById('ctxArr').addEventListener('click', () => {
+  if (!ctxTarget || !ctxTarget.arr || !ctxTarget.arr.url) return;
+  window.open(ctxTarget.arr.url, '_blank');
+  hideContextMenu();
 });
 
 /* ─── Modal helpers ─── */

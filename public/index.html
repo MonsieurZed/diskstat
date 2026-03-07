@@ -1,154 +1,236 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DiskStat - Disk Usage Analyzer</title>
-  <link rel="stylesheet" href="/css/main.css">
-</head>
-<body>
-  <header>
-    <div class="logo" title="DiskStat">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="1" width="16" height="10" rx="2" fill="#7aa2f7"/>
-        <rect x="19" y="1" width="8"  height="10" rx="2" fill="#e06c75"/>
-        <rect x="1" y="13" width="8"  height="14" rx="2" fill="#9ece6a"/>
-        <rect x="11" y="13" width="6" height="14" rx="2" fill="#bb9af7"/>
-        <rect x="19" y="13" width="8" height="14" rx="2" fill="#ff9e64"/>
-      </svg>
-      <span>DiskStat</span>
-    </div>
-    <div class="controls">
-      <input type="text" id="pathInput" value="/" placeholder="Path to scan...">
-      <select id="depthSelect">
-        <option value="2">Depth 2</option>
-        <option value="3">Depth 3</option>
-        <option value="4" selected>Depth 4</option>
-        <option value="5">Depth 5</option>
-        <option value="6">Depth 6</option>
-      </select>
-      <button id="scanBtn" onclick="startScan()">Scan</button>
-      <div class="ctrl-sep"></div>
-      <label class="ctrl-toggle" title="Masquer les fichiers cachés (.name)">
-        <input type="checkbox" id="hideHiddenToggle" checked>
-        <span class="toggle-track"><span class="toggle-thumb"></span></span>
-        <span class="toggle-text">Masquer cachés</span>
-      </label>
-      <label class="ctrl-toggle" title="Afficher tous les fichiers sans limite (plus lent)">
-        <input type="checkbox" id="showAllToggle">
-        <span class="toggle-track"><span class="toggle-thumb"></span></span>
-        <span class="toggle-text">Tout afficher</span>
-      </label>
-      <div class="ctrl-sep"></div>
-      <label class="ctrl-toggle" title="Masquer les labels de texte dans la treemap" id="hideLabelsLabel">
-        <input type="checkbox" id="hideLabelsToggle">
-        <span class="toggle-track"><span class="toggle-thumb"></span></span>
-        <span class="toggle-text">Masquer labels</span>
-      </label>
-    </div>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Explorerr - Disk Usage Analyzer</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'><rect x='1' y='1' width='16' height='10' rx='2' fill='%237aa2f7'/><rect x='19' y='1' width='8' height='10' rx='2' fill='%23e06c75'/><rect x='1' y='13' width='8' height='14' rx='2' fill='%239ece6a'/><rect x='11' y='13' width='6' height='14' rx='2' fill='%23bb9af7'/><rect x='19' y='13' width='8' height='14' rx='2' fill='%23ff9e64'/></svg>"
+    />
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo" title="Explorerr">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="16" height="10" rx="2" fill="#7aa2f7" />
+          <rect x="19" y="1" width="8" height="10" rx="2" fill="#e06c75" />
+          <rect x="1" y="13" width="8" height="14" rx="2" fill="#9ece6a" />
+          <rect x="11" y="13" width="6" height="14" rx="2" fill="#bb9af7" />
+          <rect x="19" y="13" width="8" height="14" rx="2" fill="#ff9e64" />
+        </svg>
+        <span>Explorerr</span>
+      </div>
+      <div class="controls">
+        <input type="text" id="pathInput" value="/" placeholder="Path to scan..." />
+        <select id="depthSelect">
+          <option value="2">Depth 2</option>
+          <option value="3">Depth 3</option>
+          <option value="4" selected>Depth 4</option>
+          <option value="5">Depth 5</option>
+          <option value="6">Depth 6</option>
+        </select>
+        <button id="scanBtn" onclick="startScan()" data-i18n="scan">Scan</button>
+        <div class="ctrl-sep"></div>
+        <label class="ctrl-toggle">
+          <input type="checkbox" id="hideHiddenToggle" checked />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="toggle-text" data-i18n="hideHidden">Hide hidden</span>
+        </label>
+        <div class="ctrl-sep"></div>
+        <label class="ctrl-toggle" id="hideLabelsLabel">
+          <input type="checkbox" id="hideLabelsToggle" />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="toggle-text" data-i18n="hideLabels">Hide labels</span>
+        </label>
+        <div class="ctrl-sep"></div>
+        <button class="settings-btn" onclick="openModal('settingsModal')" title="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
 
-  <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="breadcrumb" id="breadcrumb"></div>
 
-  <div class="main">
-    <div class="sidebar">
-      <div class="sidebar-header">Files &amp; Directories</div>
-      <div class="file-list" id="fileList"></div>
-      <div class="sidebar-header" style="border-top:1px solid var(--border)">Scan History</div>
-      <div class="history-list" id="historyList"></div>
+    <div class="main">
+      <div class="sidebar">
+        <div class="sidebar-header" data-i18n="filesAndDirs">Files &amp; Directories</div>
+        <div class="file-list" id="fileList"></div>
+      </div>
+      <div class="treemap-container">
+        <div id="treemap">
+          <div class="loading-overlay" id="loading" style="display: none">
+            <div class="spinner"></div>
+            <div class="progress-wrap">
+              <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+              <div class="progress-stats">
+                <span id="progressPct">0%</span>
+                <span id="progressElapsed">0:00</span>
+              </div>
+            </div>
+            <div class="progress-path" id="progressPath" data-i18n="startingScan">Starting scan...</div>
+            <button class="cancel-scan-btn" onclick="cancelScan()"><span>&#x2715;</span> <span data-i18n="cancelScan">Cancel scan</span></button>
+          </div>
+        </div>
+        <div class="ext-legend" id="extLegend"></div>
+      </div>
     </div>
-    <div class="treemap-container">
-      <div id="treemap">
-        <div class="loading-overlay" id="loading" style="display:none">
-          <div class="spinner"></div>
-          <div class="progress-wrap">
-            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
-            <div class="progress-stats">
-              <span id="progressPct">0%</span>
-              <span id="progressElapsed">0:00</span>
+
+    <div class="status-bar">
+      <span id="statusLeft" data-i18n="ready">Ready - Enter a path and click Scan</span>
+      <span id="statusRight"></span>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <!-- Context Menu -->
+    <div class="ctx-menu" id="ctxMenu">
+      <div class="ctx-menu-item" id="ctxCopy"><span class="ctx-icon">&#128203;</span><span data-i18n="copyPath">Copy path</span></div>
+      <div class="ctx-menu-item" id="ctxMove"><span class="ctx-icon">&#9998;</span><span data-i18n="move">Move</span></div>
+      <div class="ctx-menu-item danger" id="ctxDelete"><span class="ctx-icon">&#128465;</span><span data-i18n="delete">Delete</span></div>
+      <div class="ctx-menu-sep"></div>
+      <div class="ctx-menu-item" id="ctxInfo"><span class="ctx-icon">&#9432;</span><span data-i18n="moreInfo">More Info</span></div>
+      <div class="ctx-menu-sep ctx-arr-sep" id="ctxArrSep" style="display: none"></div>
+      <div class="ctx-menu-item ctx-arr-item" id="ctxArr" style="display: none"><span class="ctx-icon" id="ctxArrIcon"></span><span id="ctxArrLabel">Open in...</span></div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal">
+        <div class="modal-title" data-i18n="deleteTitle">Delete</div>
+        <div class="modal-body">
+          <div data-i18n="deleteConfirm">Are you sure you want to delete this?</div>
+          <div class="modal-path" id="deleteTargetPath"></div>
+          <div style="color: var(--red); font-size: 12px; margin-top: 4px" data-i18n="deleteWarning">This action is permanent and cannot be undone.</div>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-btn" onclick="closeModal('deleteModal')" data-i18n="cancel">Cancel</button>
+          <button class="modal-btn modal-btn-danger" id="deleteConfirmBtn" data-i18n="delete">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal-overlay" id="infoModal">
+      <div class="modal">
+        <div class="modal-title" data-i18n="fileInfo">File Information</div>
+        <div class="modal-body" id="infoModalBody"></div>
+        <div class="modal-actions">
+          <button class="modal-btn" onclick="closeModal('infoModal')" data-i18n="close">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Move Modal -->
+    <div class="modal-overlay" id="moveModal">
+      <div class="modal" style="min-width: 500px">
+        <div class="modal-title" data-i18n="moveTitle">Move</div>
+        <div class="modal-body">
+          <div style="font-size: 12px; color: var(--fg2); margin-bottom: 4px" data-i18n="moving">Moving:</div>
+          <div class="modal-path" id="moveSourcePath"></div>
+          <div style="font-size: 12px; color: var(--fg2); margin-bottom: 4px" data-i18n="selectDest">Select destination:</div>
+          <div class="move-explorer">
+            <div class="move-breadcrumb" id="moveBreadcrumb"></div>
+            <div class="move-list" id="moveList"></div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-btn" onclick="closeModal('moveModal')" data-i18n="cancel">Cancel</button>
+          <button class="modal-btn modal-btn-primary" id="moveConfirmBtn" data-i18n="moveHere">Move here</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+      <div class="modal" style="min-width: 520px">
+        <div class="modal-title" data-i18n="settingsTitle">Settings</div>
+        <div class="modal-body">
+          <div class="settings-section">
+            <div class="settings-section-title" data-i18n="general">General</div>
+            <div class="settings-row">
+              <label data-i18n="language">Language</label>
+              <select id="cfgLang" class="settings-input">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="es">Español</option>
+              </select>
             </div>
           </div>
-          <div class="progress-path" id="progressPath">Starting scan...</div>
-          <button class="cancel-scan-btn" onclick="cancelScan()">&#x2715; Annuler le scan</button>
+          <div class="settings-section">
+            <div class="settings-section-title" data-i18n="integration">Integration</div>
+            <div class="settings-row">
+              <label data-i18n="radarrUrl">Radarr URL</label>
+              <input type="text" id="cfgRadarrUrl" class="settings-input" placeholder="http://radarr:7878" />
+            </div>
+            <div class="settings-row">
+              <label data-i18n="radarrKey">Radarr API Key</label>
+              <input type="password" id="cfgRadarrKey" class="settings-input" placeholder="API Key" />
+            </div>
+            <div class="settings-row">
+              <label data-i18n="radarrPublicUrl">Radarr Public URL</label>
+              <input type="text" id="cfgRadarrPublicUrl" class="settings-input" placeholder="https://radarr.example.com" />
+            </div>
+            <div class="settings-test-row">
+              <button id="testRadarrBtn" class="settings-test-btn" onclick="testConnection('radarr')" data-i18n="testConnection">Test</button>
+            </div>
+            <div class="settings-row">
+              <label data-i18n="sonarrUrl">Sonarr URL</label>
+              <input type="text" id="cfgSonarrUrl" class="settings-input" placeholder="http://sonarr:8989" />
+            </div>
+            <div class="settings-row">
+              <label data-i18n="sonarrKey">Sonarr API Key</label>
+              <input type="password" id="cfgSonarrKey" class="settings-input" placeholder="API Key" />
+            </div>
+            <div class="settings-row">
+              <label data-i18n="sonarrPublicUrl">Sonarr Public URL</label>
+              <input type="text" id="cfgSonarrPublicUrl" class="settings-input" placeholder="https://sonarr.example.com" />
+            </div>
+            <div class="settings-test-row">
+              <button id="testSonarrBtn" class="settings-test-btn" onclick="testConnection('sonarr')" data-i18n="testConnection">Test</button>
+            </div>
+            <div class="settings-row">
+              <label data-i18n="tautulliUrl">Tautulli URL</label>
+              <input type="text" id="cfgTautulliUrl" class="settings-input" placeholder="http://tautulli:8181" />
+            </div>
+            <div class="settings-row">
+              <label data-i18n="tautulliKey">Tautulli API Key</label>
+              <input type="password" id="cfgTautulliKey" class="settings-input" placeholder="API Key" />
+            </div>
+            <div class="settings-test-row">
+              <button id="testTautulliBtn" class="settings-test-btn" onclick="testConnection('tautulli')" data-i18n="testConnection">Test</button>
+            </div>
+            <div class="settings-row">
+              <label data-i18n="pathMapping">Path Mapping</label>
+              <input type="text" id="cfgPathMap" class="settings-input" placeholder="/host/library:/data/library" />
+            </div>
+            <div class="settings-hint" data-i18n="pathMappingHint">Format: /host/path:/arr/path (comma separated)</div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-btn" onclick="closeModal('settingsModal')" data-i18n="cancel">Cancel</button>
+          <button class="modal-btn modal-btn-primary" id="settingsSaveBtn" data-i18n="save">Save</button>
         </div>
       </div>
-      <div class="ext-legend" id="extLegend"></div>
     </div>
-  </div>
 
-  <div class="status-bar">
-    <span id="statusLeft">Ready - Enter a path and click Scan</span>
-    <span id="statusRight"></span>
-  </div>
-
-  <div class="tooltip" id="tooltip"></div>
-
-  <!-- Context Menu -->
-  <div class="ctx-menu" id="ctxMenu">
-    <div class="ctx-menu-item" id="ctxCopy"><span class="ctx-icon">&#128203;</span>Copy path</div>
-    <div class="ctx-menu-item" id="ctxMove"><span class="ctx-icon">&#9998;</span>Move</div>
-    <div class="ctx-menu-item danger" id="ctxDelete"><span class="ctx-icon">&#128465;</span>Delete</div>
-    <div class="ctx-menu-sep"></div>
-    <div class="ctx-menu-item" id="ctxInfo"><span class="ctx-icon">&#9432;</span>More Info</div>
-  </div>
-
-  <!-- Delete Confirmation Modal -->
-  <div class="modal-overlay" id="deleteModal">
-    <div class="modal">
-      <div class="modal-title">Delete</div>
-      <div class="modal-body">
-        <div>Are you sure you want to delete this?</div>
-        <div class="modal-path" id="deleteTargetPath"></div>
-        <div style="color:var(--red);font-size:12px;margin-top:4px">This action is permanent and cannot be undone.</div>
-      </div>
-      <div class="modal-actions">
-        <button class="modal-btn" onclick="closeModal('deleteModal')">Cancel</button>
-        <button class="modal-btn modal-btn-danger" id="deleteConfirmBtn">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Info Modal -->
-  <div class="modal-overlay" id="infoModal">
-    <div class="modal">
-      <div class="modal-title">File Information</div>
-      <div class="modal-body" id="infoModalBody"></div>
-      <div class="modal-actions">
-        <button class="modal-btn" onclick="closeModal('infoModal')">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Move Modal -->
-  <div class="modal-overlay" id="moveModal">
-    <div class="modal" style="min-width:500px">
-      <div class="modal-title">Move</div>
-      <div class="modal-body">
-        <div style="font-size:12px;color:var(--fg2);margin-bottom:4px">Moving:</div>
-        <div class="modal-path" id="moveSourcePath"></div>
-        <div style="font-size:12px;color:var(--fg2);margin-bottom:4px">Select destination:</div>
-        <div class="move-explorer">
-          <div class="move-breadcrumb" id="moveBreadcrumb"></div>
-          <div class="move-list" id="moveList"></div>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button class="modal-btn" onclick="closeModal('moveModal')">Cancel</button>
-        <button class="modal-btn modal-btn-primary" id="moveConfirmBtn">Move here</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scripts chargés dans l'ordre de dépendance -->
-  <script src="/js/config.js"></script>
-  <script src="/js/format.js"></script>
-  <script src="/js/state.js"></script>
-  <script src="/js/treemap.js"></script>
-  <script src="/js/fileList.js"></script>
-  <script src="/js/ui.js"></script>
-  <script src="/js/scan.js"></script>
-  <script src="/js/history.js"></script>
-  <script src="/js/fileOps.js"></script>
-  <script src="/js/events.js"></script>
-</body>
+    <!-- Scripts chargés dans l'ordre de dépendance -->
+    <script src="/js/i18n.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/format.js"></script>
+    <script src="/js/state.js"></script>
+    <script src="/js/treemap.js"></script>
+    <script src="/js/fileList.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/scan.js"></script>
+    <script src="/js/fileOps.js"></script>
+    <script src="/js/settings.js"></script>
+    <script src="/js/events.js"></script>
+  </body>
 </html>

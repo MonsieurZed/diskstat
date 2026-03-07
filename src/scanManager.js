@@ -5,14 +5,15 @@
  *              les événements de progression, fin et erreur.
  */
 
-'use strict';
+"use strict";
 
-const crypto = require('crypto');
-const path   = require('path');
-const { Worker } = require('worker_threads');
+const crypto = require("crypto");
+const path = require("path");
+const { Worker } = require("worker_threads");
 
-const { SCAN_TTL }                                          = require('./config');
-const { broadcast, closeAllListeners, scheduleScanCleanup } = require('./sse');
+const { SCAN_TTL, HOST_ROOT } = require("./config");
+const { broadcast, closeAllListeners, scheduleScanCleanup } = require("./sse");
+const { enrichTree } = require("./arrCache");
 
 /**
  * Map des scans actifs indexés par leur identifiant unique.
@@ -30,56 +31,58 @@ const activeScans = new Map();
  * @returns {Object} L'objet scan créé et enregistré dans activeScans.
  */
 function createScan(userPath, realPath, maxDepth, hideHidden, showAll) {
-  const id   = crypto.randomBytes(8).toString('hex');
+  const id = crypto.randomBytes(8).toString("hex");
   const scan = {
     id,
-    path:         userPath,
-    status:       'running',
-    lastProgress: { type: 'progress', currentPath: userPath, pct: 0 },
-    result:       null,
-    error:        null,
-    listeners:    new Set(),
-    startTime:    Date.now(),
-    worker:       null,
+    path: userPath,
+    status: "running",
+    lastProgress: { type: "progress", currentPath: userPath, pct: 0 },
+    result: null,
+    error: null,
+    listeners: new Set(),
+    startTime: Date.now(),
+    worker: null,
   };
 
-  const workerScript = path.join(__dirname, 'scanner.js');
+  const workerScript = path.join(__dirname, "scanner.js");
   const worker = new Worker(workerScript, {
     workerData: { scanPath: realPath, maxDepth, hideHidden: !!hideHidden, showAll: !!showAll },
   });
 
   scan.worker = worker;
 
-  worker.on('message', (msg) => {
-    if (msg.type === 'progress') {
-      scan.lastProgress = { type: 'progress', ...msg };
+  worker.on("message", (msg) => {
+    if (msg.type === "progress") {
+      const lastPct = scan.lastProgress.pct || 0;
+      scan.lastProgress = { type: "progress", ...msg, pct: msg.pct ?? lastPct };
       broadcast(scan, scan.lastProgress);
     }
-    if (msg.type === 'done') {
-      scan.status   = 'done';
-      scan.result   = msg.data;
+    if (msg.type === "done") {
+      enrichTree(msg.data, HOST_ROOT);
+      scan.status = "done";
+      scan.result = msg.data;
       scan.doneTime = Date.now();
-      broadcast(scan, { type: 'done', data: msg.data });
+      broadcast(scan, { type: "done", data: msg.data });
       closeAllListeners(scan);
       scheduleScanCleanup(id);
     }
   });
 
-  worker.on('error', (err) => {
-    scan.status   = 'error';
-    scan.error    = err.message;
+  worker.on("error", (err) => {
+    scan.status = "error";
+    scan.error = err.message;
     scan.doneTime = Date.now();
-    broadcast(scan, { type: 'error', error: err.message });
+    broadcast(scan, { type: "error", error: err.message });
     closeAllListeners(scan);
     scheduleScanCleanup(id);
   });
 
-  worker.on('exit', (code) => {
-    if (scan.status === 'running' && code !== 0) {
-      scan.status   = 'error';
-      scan.error    = 'Worker exited with code ' + code;
+  worker.on("exit", (code) => {
+    if (scan.status === "running" && code !== 0) {
+      scan.status = "error";
+      scan.error = "Worker exited with code " + code;
       scan.doneTime = Date.now();
-      broadcast(scan, { type: 'error', error: scan.error });
+      broadcast(scan, { type: "error", error: scan.error });
       closeAllListeners(scan);
       scheduleScanCleanup(id);
     }

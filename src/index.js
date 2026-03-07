@@ -1,6 +1,6 @@
 /**
  * @file index.js
- * @description Point d'entrée du serveur HTTP DiskStat.
+ * @description Point d'entrée du serveur HTTP Explorerr.
  *              Initialise les modules interdépendants et démarre l'écoute.
  */
 
@@ -18,5 +18,5 @@ initSse(activeScans);
 const server = http.createServer(router);
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`DiskStat server running on http://0.0.0.0:${PORT}`);
+  console.log(`Explorerr server running on http://0.0.0.0:${PORT}`);
 });

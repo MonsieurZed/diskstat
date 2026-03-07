@@ -41,9 +41,10 @@ let maxItemsFlag = 200;
  */
 function applyMaxItems(children) {
   if (maxItemsFlag === 0 || children.length <= maxItemsFlag) return children;
-  const kept      = children.slice(0, maxItemsFlag);
-  const otherSize = children.slice(maxItemsFlag).reduce((s, c) => s + c.size, 0);
-  kept.push({ name: `(${children.length - maxItemsFlag} others)`, path: '', size: otherSize, children: [] });
+  const kept   = children.slice(0, maxItemsFlag);
+  const others = children.slice(maxItemsFlag);
+  const otherSize = others.reduce((s, c) => s + c.size, 0);
+  kept.push({ name: `(${others.length} others)`, path: '', size: otherSize, children: others });
   return kept;
 }
 

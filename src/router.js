@@ -13,6 +13,7 @@ const url  = require('url');
 const { handleScanStream }                                                    = require('./handlers/scanStream');
 const { handleScanCancel }                                                    = require('./handlers/scanCancel');
 const { handleScans, handleScanSync, handleDu, handleList, handleInfo, handleDelete, handleMove } = require('./handlers/fileOps');
+const { handleGetConfig, handlePostConfig, handleTestConnection } = require('./handlers/config');
 
 /**
  * Types MIME supportés pour les fichiers statiques.
@@ -91,6 +92,21 @@ async function router(req, res) {
 
   if (pathname === '/api/scan/cancel' && req.method === 'POST') {
     await handleScanCancel(req, res);
+    return;
+  }
+
+  if (pathname === '/api/config' && req.method === 'GET') {
+    handleGetConfig(res);
+    return;
+  }
+
+  if (pathname === '/api/config' && req.method === 'POST') {
+    await handlePostConfig(req, res);
+    return;
+  }
+
+  if (pathname === '/api/test-connection' && req.method === 'POST') {
+    await handleTestConnection(req, res);
     return;
   }
 
